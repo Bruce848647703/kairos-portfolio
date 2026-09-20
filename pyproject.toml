@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kairos-portfolio"
+version = "0.1.0"
+description = "Kairos Portfolio —— 自研轻量组合优化与风险度量库（均值-方差 / 风险平价 / Ledoit-Wolf / 有效前沿 / VaR-CVaR）"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [{ name = "Bruce848647703" }]
+keywords = ["quant", "portfolio", "optimization", "risk", "ledoit-wolf", "risk-parity", "efficient-frontier"]
+dependencies = [
+    "numpy>=1.21",
+    "pandas>=1.3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+scipy = ["scipy>=1.7"]
+
+[tool.setuptools]
+packages = ["kairos_portfolio"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

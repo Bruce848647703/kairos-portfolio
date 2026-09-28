@@ -63,6 +63,33 @@ print(tv.exposure, tv.cash_weight, tv.portfolio_vol)
 完整可运行示例见 [`examples/demo.py`](examples/demo.py)（long-only 演示需要 scipy，
 缺失时自动退化为无约束解析解并给出提示）。
 
+## 真实数据组合优化
+除合成数据 demo 外，仓库附**真实行情**的组合优化示例
+[`examples/real_portfolio.py`](examples/real_portfolio.py)：加载 `kairos-data` 的本地日线 CSV →
+清洗为平衡收盘价面板 → 估计矩（`sample_cov` 与 `ledoit_wolf` 对照，报告收缩强度 δ）→
+求等权 / 最小方差 / 最大夏普 / 均值方差 / 风险平价权重 → 计算年化波动、夏普、VaR/CVaR、
+成分风险贡献（校验风险平价等风险）与分散化比率 → 生成有效前沿，最终把结果写入
+`research/real_portfolio/`（`REPORT.md` 中文报告 + `frontier.csv` + `weights.csv`）。
+
+```bash
+# 跨资产 ETF（含国债/黄金/货币，适合风险平价/全天候）
+python examples/real_portfolio.py --data-dir /path/to/kairos-data/data/etf
+# A 股个股（38 只）
+python examples/real_portfolio.py --data-dir /path/to/kairos-data/data/ashare
+```
+
+加载器 `kp.load_close_panel(data_dir)` 负责同系列口径：非正价→NaN、ffill 桥接停牌、
+按全体上市日裁剪为平衡面板（纯 numpy/pandas、离线只读，`drop_incomplete=False` 可保留并集）。
+
+**示例结论**（跨资产 ETF，2017–2026 公共窗口）：纯风险导向的最小方差 / 风险平价被近零波动的
+货币腿捕获（权重 99% / 86%），组合波动极低但收益随之塌缩；样本内最大夏普最高（≈2.0，以债券为主干，
+存在前视/过拟合），均值方差（λ=15）给出更可投资的收益—风险平衡（年化收益 ≈10.8%、夏普 ≈1.5），
+风险平价分散化比率最高（≈2.1）且成分风险严格等分。完整数字与诚实结论见生成的 `REPORT.md`。
+
+### 数据声明
+- 示例所用真实行情来自 `kairos-data` 的**公开行情**（跨资产 ETF / A 股个股，前复权），本仓库只读引用、不再分发。
+- 全部结果为历史**样本内**统计与优化演示，期望收益采用已实现均值（含前视偏差），**仅用于研究与学习，不构成任何投资建议**。
+
 ## API 概览
 | 模块 | 关键对象 | 说明 |
 |---|---|---|
@@ -70,6 +97,7 @@ print(tv.exposure, tv.cash_weight, tv.portfolio_vol)
 | `optimize` | `equal_weight` `min_variance` `max_sharpe` `mean_variance` `risk_parity` `target_volatility` `TargetVolPortfolio` | 组合优化器 |
 | `risk` | `portfolio_volatility` `beta` `historical_var` `parametric_var` `cvar` `risk_contributions` `norm_ppf` | 风险度量 |
 | `frontier` | `efficient_frontier` `Frontier` `FrontierPoint` | 有效前沿 |
+| `realdata` | `load_close_panel` | 真实行情加载（本地日线 CSV → 平衡收盘价面板，离线只读） |
 
 ## 设计要点
 - **数据约定**：一切「收益面板」指 DataFrame(index=日期, columns=资产)；协方差 / 期望
@@ -91,9 +119,10 @@ make test          # 或 python -m pytest -q
 
 ## 项目结构
 ```
-kairos_portfolio/   核心包（moments / optimize / risk / frontier / _util）
-examples/           可运行示例
+kairos_portfolio/   核心包（moments / optimize / risk / frontier / realdata / _util）
+examples/           可运行示例（demo.py 合成数据 / real_portfolio.py 真实行情）
 tests/              pytest 测试
+research/           真实数据示例产物（real_portfolio/：REPORT.md + frontier.csv + weights.csv，已入库）
 ```
 
 ## 许可

@@ -7,3 +7,8 @@ build/
 dist/
 .ipynb_checkpoints/
 .DS_Store
+
+# research 产物：默认不入库，仅放开 real_portfolio 的 REPORT.md 与 csv 结果
+research/real_portfolio/*
+!research/real_portfolio/REPORT.md
+!research/real_portfolio/*.csv

@@ -1,5 +1,7 @@
 # Kairos Portfolio
 
+[![CI](https://github.com/Bruce848647703/kairos-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/Bruce848647703/kairos-portfolio/actions/workflows/ci.yml)
+
 > Kairos 量化系列的组合优化模块 —— 一个**自研、轻量**的 Python 组合优化与风险度量库。
 
 `kairos_portfolio` 覆盖「矩估计 → 组合优化 → 风险度量 → 有效前沿」的核心环节：
